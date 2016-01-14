@@ -1,8 +1,8 @@
 '''
-tween para BGE, v0.8
+tween para BGE, v0.9
 Mario Mey - http://www.mariomey.com.ar
 
-Funcion Tween, para:
+Funcion Tween, para (entre otras cosas):
 
 - mover, rotar, escalar objetos
 - cambiar color, alpha de un objeto
@@ -10,8 +10,8 @@ Funcion Tween, para:
 - mover bones
 - cambiar influence de Constraints un bone
 
-...en un tiempo determinado, usando diferentes equaciones para
- la interpolacion.
+...en un tiempo determinado, con un delay para el comienzo,
+usando diferentes equaciones para la interpolacion, etc, etc.
 
 
 Based in Tweener, for ActionScript 2 and 3.
@@ -75,6 +75,8 @@ def tween(**kwargs):
 	duration = 1.0
 	ease_type = 'outQuad'
 	
+	send_message_on_end = None
+	
 	obj_prop_on_start = None
 	obj_prop_on_start_value = None
 	obj_prop_on_end = None
@@ -117,6 +119,8 @@ def tween(**kwargs):
 	if 'duration' in kwargs:            duration               = kwargs['duration']
 	if 'ease_type' in kwargs:           ease_type              = kwargs['ease_type']
 	
+	if 'send_message_on_end' in kwargs:       send_message_on_end          = kwargs['send_message_on_end']
+	
 	if 'obj_prop_on_start' in kwargs:       obj_prop_on_start          = kwargs['obj_prop_on_start']
 	if 'obj_prop_on_start_value' in kwargs: obj_prop_on_start_value    = kwargs['obj_prop_on_start_value']
 	if 'obj_prop_on_end' in kwargs:         obj_prop_on_end            = kwargs['obj_prop_on_end']
@@ -138,12 +142,14 @@ def tween(**kwargs):
 	cond2 = rot_obj_target == rot_target == None
 	cond3 = scl_obj_target == scl_target == None
 	cond4 = prop_value == color == enforce == None
-	if cond1 and cond2 and cond3 and cond4:
+	cond5 = send_message_on_end == None
+	if cond1 and cond2 and cond3 and cond4 and cond5:
 		print('Tween Error. Falta, al menos, uno de los siguientes datos:')
 		print('       loc_obj_target, loc_target,')
 		print('       rot_obj_target, rot_target,')
 		print('       scl_obj_target, scl_target,')
-		print('       prop_value, color, enforce')
+		print('       prop_value, color, enforce,')
+		print('       send_message_on_end')
 		return
 	
 	# para evitar multiples acciones
@@ -179,6 +185,16 @@ def tween(**kwargs):
 		print('Tween Error. No existe la propiedad del objeto: ', element.split(':')[0])
 		return
 
+	# si send_message_on_end no es una lista
+	if send_message_on_end != None and type(send_message_on_end) is not list:
+		print('Tween Error. send_message_on_end debe ser una lista de dos elementos: ["subject", "body"]')
+		return
+
+	# si send_message_on_end es una lista de != 2 elementos
+	if send_message_on_end != None and type(send_message_on_end) is list and len(send_message_on_end) != 2:
+		print('Tween Error. send_message_on_end debe ser una lista de dos elementos: ["subject", "body"]')
+		return
+
 	#~ if prop_value != None and (type(prop_value) == int or type(prop_value) == float:
 		#~ print('Error. Valores en int o float para prop_value')
 		#~ return
@@ -201,10 +217,8 @@ def tween(**kwargs):
 		function = 'property'
 		if prop_value_begin == None:
 			prop_value_begin = scene.objects[obj][element[1]]
-			
-		
-	else:
 	
+	else:
 		# objeto
 		if len(element) == 1:
 			# si es para mover un obj, setea loc_begin[x,y,z]
@@ -270,6 +284,14 @@ def tween(**kwargs):
 						print('--TWEEN - obj: ' + obj, end='')
 						print(' - color_begin = color -> Nada para hacer')
 					return
+
+			cond1 = loc_obj_target == None and loc_target == None
+			cond2 = rot_obj_target == None and rot_target == None
+			cond3 = scl_obj_target == None and scl_target == None
+			cond4 = color == None
+			cond5 = send_message_on_end != None
+			if cond1 and cond2 and cond3 and cond4 and cond5:
+				function = 'onlySendMessage'
 			
 		# bone en Local
 		# si es para mover un bone, setea begin[x,y,z] del bone
@@ -315,7 +337,6 @@ def tween(**kwargs):
 				
 				# function a ejecutar cuando termina, si se corta antes
 				if own['tween' + num]['obj_prop_on_end'] != None:
-					print('lo hace?¿¡')
 					prop = own['tween' + num]['obj_prop_on_end']
 					value = own['tween' + num]['obj_prop_on_end_value']
 					scene.objects[obj][prop] = value
@@ -374,6 +395,8 @@ def tween(**kwargs):
 	own['tween' + number]['duration']            = duration
 	own['tween' + number]['delay']               = delay
 	own['tween' + number]['ease_type']           = ease_type
+	
+	own['tween' + number]['send_message_on_end']       = send_message_on_end
 	
 	own['tween' + number]['obj_prop_on_start']       = obj_prop_on_start
 	own['tween' + number]['obj_prop_on_start_value'] = obj_prop_on_start_value
@@ -458,6 +481,9 @@ def tween(**kwargs):
 		if scl_obj_target != None:
 			texto += '--scl_obj_target: ' + scl_obj_target + '\n'
 
+		if send_message_on_end != None:
+			texto += '--send_message_on_end: ' + str(send_message_on_end) + '\n'
+
 		if obj_prop_on_start != None:
 			texto += '--obj_prop_on_start: ' + str(obj_prop_on_start) + ':' + str(obj_prop_on_start_value) + '\n'
 
@@ -514,6 +540,8 @@ def tween_loop():
 			delay               = own['tween' + number]['delay']
 			duration            = own['tween' + number]['duration']
 			ease_type           = own['tween' + number]['ease_type']
+			
+			send_message_on_end       = own['tween' + number]['send_message_on_end']
 			
 			obj_prop_on_start       = own['tween' + number]['obj_prop_on_start']
 			obj_prop_on_start_value = own['tween' + number]['obj_prop_on_start_value']
@@ -573,12 +601,20 @@ def tween_loop():
 						#~ print('borra', number)
 						del(own['tween' + number])
 					
+						# sendMessage cuando termina
+						if send_message_on_end != None:
+							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
+								print('**send_message_on_end:', send_message_on_end)
+							subject = send_message_on_end[0]
+							body = send_message_on_end[1]
+							own.sendMessage(subject, body)
+							
 						# function a ejecutar cuando termina
 						if obj_prop_on_end != None:
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
 								print('**obj_prop_on_end:', obj_prop_on_end)
 							scene.objects[obj][obj_prop_on_end] = obj_prop_on_end_value
-					
+							
 						# function a ejecutar cuando termina
 						if gd_key_on_end != None:
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
@@ -623,6 +659,14 @@ def tween_loop():
 						#~ print('borra', number)
 						del(own['tween' + number])
 					
+						# sendMessage cuando termina
+						if send_message_on_end != None:
+							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
+								print('**send_message_on_end:', send_message_on_end)
+							subject = send_message_on_end[0]
+							body = send_message_on_end[1]
+							own.sendMessage(subject, body)
+							
 						# function a ejecutar cuando termina
 						if obj_prop_on_end != None:
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
@@ -670,6 +714,14 @@ def tween_loop():
 						#~ print('borra', number)
 						del(own['tween' + number])
 					
+						# sendMessage cuando termina
+						if send_message_on_end != None:
+							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
+								print('**send_message_on_end:', send_message_on_end)
+							subject = send_message_on_end[0]
+							body = send_message_on_end[1]
+							own.sendMessage(subject, body)
+							
 						# function a ejecutar cuando termina
 						if obj_prop_on_end != None:
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
@@ -713,6 +765,14 @@ def tween_loop():
 						#~ print('borra', number)
 						del(own['tween' + number])
 					
+						# sendMessage cuando termina
+						if send_message_on_end != None:
+							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
+								print('**send_message_on_end:', send_message_on_end)
+							subject = send_message_on_end[0]
+							body = send_message_on_end[1]
+							own.sendMessage(subject, body)
+							
 						# function a ejecutar cuando termina
 						if obj_prop_on_end != None:
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
@@ -748,6 +808,14 @@ def tween_loop():
 						#~ print('borra', number)
 						del(own['tween' + number])
 						
+						# sendMessage cuando termina
+						if send_message_on_end != None:
+							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
+								print('**send_message_on_end:', send_message_on_end)
+							subject = send_message_on_end[0]
+							body = send_message_on_end[1]
+							own.sendMessage(subject, body)
+							
 						# Funcion a ejecutar cuando termina
 						if obj_prop_on_end != None:
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
@@ -783,6 +851,14 @@ def tween_loop():
 						#~ print('borra', number)
 						del(own['tween' + number])
 						
+						# sendMessage cuando termina
+						if send_message_on_end != None:
+							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
+								print('**send_message_on_end:', send_message_on_end)
+							subject = send_message_on_end[0]
+							body = send_message_on_end[1]
+							own.sendMessage(subject, body)
+							
 						# Funcion a ejecutar cuando termina
 						if obj_prop_on_end != None:
 							own[obj_prop_on_end] = obj_prop_on_end_value
@@ -801,6 +877,22 @@ def tween_loop():
 					
 					#~ print('tween_constraint_enforce("' + element + '", ' + str(x) + ')')
 					eval('tween_obj_property("' + obj + ':' + element[1] + '", ' + str(x) + ')')
+				
+				# FUNCION ONLYSENDMESSAGE
+				elif function == 'onlySendMessage':
+
+					# termina el tiempo de duracion
+					if timer > duration:
+						#~ print('borra', number)
+						del(own['tween' + number])
+
+						# sendMessage cuando termina
+						if send_message_on_end != None:
+							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
+								print('**send_message_on_end:', send_message_on_end)
+							subject = send_message_on_end[0]
+							body = send_message_on_end[1]
+							own.sendMessage(subject, body)
 
 # TWEEN - Ecuaciones
 def tween_eq(ease_type, t, b, c, d):
@@ -984,6 +1076,7 @@ def tween_evento(evento):
 	_gd_key_on_end = None
 	_gd_key_on_end_value = None
 	
+	_send_message_on_end = None
 	_seg_orden_on_end = None
 	
 	if 'element' in evento:             _element                = evento['element']
@@ -1023,6 +1116,7 @@ def tween_evento(evento):
 	if 'gd_key_on_end_value' in evento:   _gd_key_on_end_value      = evento['gd_key_on_end_value']
 	
 	if 'seg_orden_on_end' in evento:    _seg_orden_on_end       = evento['seg_orden_on_end']
+	if 'send_message_on_end' in evento:    _send_message_on_end       = evento['send_message_on_end']
 	
 	tween(element = _element,
 				
@@ -1031,20 +1125,20 @@ def tween_evento(evento):
 				color_begin = _color_begin, 
 				color = _color,
 				
-				loc_obj_begin = _loc_obj_begin, 
 				loc_begin = _loc_begin,
-				loc_obj_target = _loc_obj_target, 
 				loc_target = _loc_target,
+				loc_obj_begin = _loc_obj_begin, 
+				loc_obj_target = _loc_obj_target, 
 				
-				rot_obj_begin = _rot_obj_begin, 
 				rot_begin = _rot_begin,
-				rot_obj_target = _rot_obj_target, 
 				rot_target = _rot_target,
+				rot_obj_begin = _rot_obj_begin, 
+				rot_obj_target = _rot_obj_target, 
 				
-				scl_obj_begin = _scl_obj_begin, 
 				scl_begin = _scl_begin,
-				scl_obj_target = _scl_obj_target, 
 				scl_target = _scl_target,
+				scl_obj_begin = _scl_obj_begin, 
+				scl_obj_target = _scl_obj_target, 
 				
 				delay = _delay, 
 				duration = _duration, 
@@ -1060,9 +1154,27 @@ def tween_evento(evento):
 				gd_key_on_end = _gd_key_on_end,
 				gd_key_on_end_value = _gd_key_on_end_value,
 				
+				send_message_on_end = _send_message_on_end,
 				seg_orden_on_end = _seg_orden_on_end)
 '''
-tween for BGE, v0.7
+tween for BGE, v0.9
+
+tween.tween(element = own.name, 
+duration = 1.0, delay = 0, ease_type = 'outQuad', 
+enforce_begin = None, enforce = None, 
+color_begin = None, color = None, 
+loc_begin = None, loc_target = None, 
+loc_obj_begin = None, loc_obj_target = None,
+rot_begin = None, rot_target = None, 
+rot_obj_begin = None, rot_obj_target = None, 
+scl_begin = None, scl_target = None, 
+scl_obj_begin = None, scl_obj_target = None, 
+obj_prop_on_start = None, obj_prop_on_start_value = None,
+obj_prop_on_end = None, obj_prop_on_end_value = None,
+gd_key_on_start = None, gd_key_on_start_value = None,
+gd_key_on_end = None, gd_key_on_end_value = None,
+send_message_on_end = None,
+seg_orden_on_end = None)
 
 
 For moving or rotating (euler) or scale object from:
@@ -1109,6 +1221,10 @@ to:
 
 EG: tween.tween(element='Armature.001:Bone.001:damp', enforce=1)
 
+
+Just for sending a message after 1 second:
+
+EG: tween.tween(send_message_on_end=['subj', 'body'])
 
 ---------Defaults---------
 
@@ -1160,6 +1276,7 @@ gd_key_on_start_value = None      ; New value of the property
 gd_key_on_end = None              ; globalDict key to change on tween finish
 gd_key_on_end_value = None        ; New value of the property
 
+send_message_on_end = None        ; Send Message when tween ends
 seg_orden_on_end = None           ; Second order (to do when tween ends, saved in
 								    scene.objects[obj][seg_orden_tween + number], to use with MD)
 
@@ -1175,6 +1292,10 @@ http://www.mariomey.com.ar
 --------------
 Changelog:
 --------------
+
+v0.9 - 18/11/2015:
+- Se agrega 'send_message_on_end' para enviar un mensaje cuando termina el tween.
+  Acepta que solo envie un mensaje, sin ningun otro tween. 
 
 v0.8 - 17/7/2015:
 - Se agregan 'inCubic', 'outCubic' y 'inOutCubic', como equaciones
