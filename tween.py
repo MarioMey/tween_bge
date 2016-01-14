@@ -1,5 +1,5 @@
 '''
-tween para BGE, v0.4
+tween para BGE, v0.5
 Mario Mey - http://www.mariomey.com.ar
 
 Funcion Tween, para mover objetos y bones y cambiar influence de Constraints
