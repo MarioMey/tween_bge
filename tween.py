@@ -1,9 +1,17 @@
 '''
-tween para BGE, v0.7
+tween para BGE, v0.8
 Mario Mey - http://www.mariomey.com.ar
 
-Funcion Tween, para mover objetos y bones y cambiar influence de Constraints
-en un tiempo determinado, usando diferentes equaciones para la interpolacion.
+Funcion Tween, para:
+
+- mover, rotar, escalar objetos
+- cambiar color, alpha de un objeto
+- cambiar valores de las "properties" de un objeto
+- mover bones
+- cambiar influence de Constraints un bone
+
+...en un tiempo determinado, usando diferentes equaciones para
+ la interpolacion.
 
 
 Based in Tweener, for ActionScript 2 and 3.
@@ -799,18 +807,67 @@ def tween_eq(ease_type, t, b, c, d):
 	#~ if t >= 0:
 	if ease_type == 'linear':
 		return c * t / d + b
+	
 	elif ease_type == 'inQuad':
-		t/=d
+		t /= d
 		return c * t * t + b
+	
 	elif ease_type == 'outQuad':
-		t/=d
+		t /= d
 		return - c * t * (t - 2) + b
+	
 	elif ease_type == 'inOutQuad':
-		t/=d/2
+		t /= d / 2
 		if (t < 1):
 			return c / 2 * t * t + b
 		t -= 1
 		return -c / 2 * ((t) * (t - 2) - 1) + b
+	
+	
+	elif ease_type == 'inCubic':
+		t /= d
+		return c * t * t * t + b
+	
+	elif ease_type == 'outCubic':
+		t /= d
+		t -= 1
+		return c * (t * t * t + 1) + b
+	
+	elif ease_type == 'inOutCubic':
+		t /= d / 2
+		if (t < 1):
+			return c / 2 * t * t * t + b
+		t -= 2
+		return c / 2 * (t * t * t + 2) + b
+		
+	#~ elif ease_type == 'easeOutElastic':
+		#~ 
+		#~ http://www.joshondesign.com/2013/03/01/improvedEasingEquations
+		#~ 
+		#~ easeOutElastic:function(x,t,b,c,d){
+		#~ vars=1.70158;varp=0;vara=c;
+		#~ if(t==0)returnb;if((t/=d)==1)returnb+c;if(!p)p=d*.3;
+		#~ if(a<Math.abs(c)){a=c;vars=p/4;}
+		#~ elsevars=p/(2*Math.PI)*Math.asin(c/a);
+		#~ returna*Math.pow(2,-10*t)*Math.sin((t*d-s)*(2*Math.PI)/p)+c+b;
+		#~ },
+		#~ 
+		#~ function(x,t,b,c,d){
+			#~ s=1.70158
+			#~ p=0
+			#~ a=c
+			#~ if t == 0:
+				#~ return b
+			#~ if t/=d == 1:
+				#~ return b+c
+			#~ if not p:
+				#~ p=d*.3
+			#~ if a < Math.abs(c):
+				#~ a = c
+				#~ s = p/4
+			#~ else:
+				#~ s=p/(2*Math.PI)*Math.asin(c/a)
+				#~ return a*Math.pow(2,-10*t)*Math.sin((t*d-s)*(2*Math.PI)/p)+c+b;
 
 # recibe objeto y valor en lista[x,y,z]
 def tween_obj_move(element, xyz):
@@ -1088,7 +1145,8 @@ scl_target = None             ; [x,y,z] or ['',5,0.5] of the final scale for the
 
 delay = 0                     ; Delay before tweening (in seconds)
 duration = 1.0                ; Duration of the tweening (in seconds)
-ease_type = 'outQuad'         ; Ease type: 'linear', 'outQuad', 'inQuad', 'inOutQuad' (Robbert Penner)
+ease_type = 'outQuad'         ; Ease type: 'linear', 'outQuad', 'inQuad', 'inOutQuad',
+                              ;             'inCubic', 'outCubic' and 'inOutCubic' (Robbert Penner)
 
 obj_prop_on_start = None          ; Own object property (key of object dictionary) to change on tween start
 obj_prop_on_start_value = None    ; New value of the property
@@ -1117,6 +1175,10 @@ http://www.mariomey.com.ar
 --------------
 Changelog:
 --------------
+
+v0.8 - 17/7/2015:
+- Se agregan 'inCubic', 'outCubic' y 'inOutCubic', como equaciones
+
 
 v0.7 - 17/7/2015:
 - Se agrega "print_*", que imprime los cambios en las funciones finales
