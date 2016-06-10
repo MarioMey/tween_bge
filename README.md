@@ -1,5 +1,5 @@
-tween for BGE, v0.9
-===================
+tween for BGE, v0.91
+====================
 
 tween.tween(element = own.name, 
 duration = 1.0, delay = 0, ease_type = 'outQuad', 
@@ -134,6 +134,9 @@ http://www.mariomey.com.ar
 
 Changelog:
 ----------
+
+v0.91 - 26/04/2016:
+- Se agrega un mensaje de error si algun objeto usado como referencia no existe.
 
 v0.9 - 18/11/2015:
 - Se agrega 'send_message_on_end' para enviar un mensaje cuando termina el tween.
