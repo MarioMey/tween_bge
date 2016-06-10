@@ -1,12 +1,12 @@
 '''
-tween para BGE, v0.9
+tween para BGE, v0.91
 Mario Mey - http://www.mariomey.com.ar
 
 Funcion Tween, para (entre otras cosas):
 
 - mover, rotar, escalar objetos
 - cambiar color, alpha de un objeto
-- cambiar valores de las "properties" de un objeto
+- cambiar valores de las 'properties' de un objeto
 - mover bones
 - cambiar influence de Constraints un bone
 
@@ -28,14 +28,23 @@ scene = bge.logic.getCurrentScene()
 cont = bge.logic.getCurrentController()
 own = cont.owner
 
-print_obj_move = False
-print_obj_rotate = False
-print_obj_scale = False
-print_obj_property = False
-print_obj_color = False
-print_obj_diff_color = False
-print_bone_move = False
-print_constraint_enforce = False
+#~ print_obj_move = False
+#~ print_obj_rotate = False
+#~ print_obj_scale = False
+#~ print_obj_property = False
+#~ print_obj_color = False
+#~ print_obj_diff_color = False
+#~ print_bone_move = False
+#~ print_constraint_enforce = False
+
+print_obj_move = True
+print_obj_rotate = True
+print_obj_scale = True
+print_obj_property = True
+print_obj_color = True
+print_obj_diff_color = True
+print_bone_move = True
+print_constraint_enforce = True
 
 # TWEEN - Principal, hace funcionar el Loop
 def tween(**kwargs):
@@ -163,6 +172,17 @@ def tween(**kwargs):
 		print('Tween Error. Por favor, de a una accion a la vez.')
 		return
 	
+	cond1 = loc_obj_begin != None and loc_obj_begin not in scene.objects
+	cond2 = loc_obj_target != None and loc_obj_target not in scene.objects
+	cond3 = rot_obj_begin != None and rot_obj_begin not in scene.objects
+	cond4 = rot_obj_target != None and rot_obj_target not in scene.objects
+	cond5 = scl_obj_begin != None and scl_obj_begin not in scene.objects
+	cond6 = scl_obj_target != None and scl_obj_target not in scene.objects
+	if cond1 or cond2 or cond3 or cond4 or cond5 or cond6:
+		print('Tween Error. No existe el objeto de referencia')
+		return
+		
+	
 	# para evitar mover un bone a un worldLocation
 	if len(element.split(':')) == 2 and (loc_obj_begin != None or loc_obj_target != None):
 		print('Tween Error. Por el momento, no se puede mover un bone a/de un Word Location')
@@ -187,12 +207,12 @@ def tween(**kwargs):
 
 	# si send_message_on_end no es una lista
 	if send_message_on_end != None and type(send_message_on_end) is not list:
-		print('Tween Error. send_message_on_end debe ser una lista de dos elementos: ["subject", "body"]')
+		print('Tween Error. send_message_on_end debe ser una lista de dos elementos: [subject, body]')
 		return
 
 	# si send_message_on_end es una lista de != 2 elementos
 	if send_message_on_end != None and type(send_message_on_end) is list and len(send_message_on_end) != 2:
-		print('Tween Error. send_message_on_end debe ser una lista de dos elementos: ["subject", "body"]')
+		print('Tween Error. send_message_on_end debe ser una lista de dos elementos: [subject, body]')
 		return
 
 	#~ if prop_value != None and (type(prop_value) == int or type(prop_value) == float:
@@ -629,10 +649,10 @@ def tween_loop():
 								print('**objeto:', obj)
 					
 					if function == 'obj_move':
-						#~ print(function + '("' + obj + '", ' + str(xyz) + ')')
+						#~ print(function + '(' + obj + ', ' + str(xyz) + ')')
 						eval('tween_' + function + '("' + obj + '", ' + str(xyz) + ')')
 					elif function == 'bone_move':
-						#~ print(function + '("' + obj + '", ' + str(xyz) + ')')
+						#~ print(function + '(' + obj + ', ' + str(xyz) + ')')
 						eval('tween_' + function + '("' + obj + ':' + element[1] + '", ' + str(xyz) + ')')
 				
 				# OBJ_ROTATE
@@ -687,7 +707,7 @@ def tween_loop():
 								print('**seg_orden_on_end' + number + ':', seg_orden_on_end, end=' ')
 								print('**objeto:', obj)
 					
-					#~ print(function + '("' + obj + '", ' + str(xyz) + ')')
+					#~ print(function + '(' + obj + ', ' + str(xyz) + ')')
 					eval('tween_' + function + '("' + obj + '", ' + str(xyz) + ')')
 				
 				# OBJ_SCALE
@@ -742,7 +762,7 @@ def tween_loop():
 								print('**seg_orden_on_end' + number + ':', seg_orden_on_end, end=' ')
 								print('**objeto:', obj)
 					
-					#~ print(function + '("' + obj + '", ' + str(xyz) + ')')
+					#~ print(function + '(' + obj + ', ' + str(xyz) + ')')
 					eval('tween_' + function + '("' + obj + '", ' + str(xyz) + ')')
 				
 				# FUNCION OBJ_COLOR
@@ -793,7 +813,7 @@ def tween_loop():
 								print('**seg_orden_on_end' + number + ':', seg_orden_on_end, end=' ')
 								print('**objeto:', obj)
 					
-					#~ print('tween_obj_color("' + element + '", ' + str(rgba) + ')')
+					#~ print('tween_obj_color(' + element + ', ' + str(rgba) + ')')
 					eval('tween_obj_color("' + obj + '", ' + str(rgba) + ')')
 				
 				# FUNCION CONSTRAINT ENFORCE
@@ -836,7 +856,7 @@ def tween_loop():
 								print('**seg_orden_on_end' + number + ':', seg_orden_on_end, end=' ')
 								print('**objeto:', obj)
 					
-					#~ print('tween_constraint_enforce("' + element + '", ' + str(x) + ')')
+					#~ print('tween_constraint_enforce(' + element + ', ' + str(x) + ')')
 					eval('tween_constraint_enforce("' + obj + ':' + element[1] + ':' + element[2] + '", ' + str(x) + ')')
 
 				# FUNCION PROPERTY
@@ -875,7 +895,7 @@ def tween_loop():
 								print('**seg_orden_on_end' + number + ':', seg_orden_on_end, end=' ')
 								print('**objeto:', obj)
 					
-					#~ print('tween_constraint_enforce("' + element + '", ' + str(x) + ')')
+					#~ print('tween_constraint_enforce(' + element + ', ' + str(x) + ')')
 					eval('tween_obj_property("' + obj + ':' + element[1] + '", ' + str(x) + ')')
 				
 				# FUNCION ONLYSENDMESSAGE
@@ -1157,7 +1177,7 @@ def tween_evento(evento):
 				send_message_on_end = _send_message_on_end,
 				seg_orden_on_end = _seg_orden_on_end)
 '''
-tween for BGE, v0.9
+tween for BGE, v0.91
 
 tween.tween(element = own.name, 
 duration = 1.0, delay = 0, ease_type = 'outQuad', 
@@ -1224,7 +1244,7 @@ EG: tween.tween(element='Armature.001:Bone.001:damp', enforce=1)
 
 Just for sending a message after 1 second:
 
-EG: tween.tween(send_message_on_end=['subj', 'body'])
+EG: tween.tween(send_message_on_end=[subj, body])
 
 ---------Defaults---------
 
@@ -1293,6 +1313,9 @@ http://www.mariomey.com.ar
 Changelog:
 --------------
 
+v0.91 - 26/04/2016:
+- Se agrega un mensaje de error si algun objeto usado como referencia no existe.
+
 v0.9 - 18/11/2015:
 - Se agrega 'send_message_on_end' para enviar un mensaje cuando termina el tween.
   Acepta que solo envie un mensaje, sin ningun otro tween. 
@@ -1300,21 +1323,11 @@ v0.9 - 18/11/2015:
 v0.8 - 17/7/2015:
 - Se agregan 'inCubic', 'outCubic' y 'inOutCubic', como equaciones
 
-
 v0.7 - 17/7/2015:
-- Se agrega "print_*", que imprime los cambios en las funciones finales
-- Se arregla algunas cosas de "print_tween_funciones"
-
+- Se agrega 'print_*', que imprime los cambios en las funciones finales
+- Se arregla algunas cosas de 'print_tween_funciones'
 
 v0.6 - 16/4/2015:
-- 'own_' is replaced by 'obj_' in arguments, to change object properties
-- Bugfix: when Tween ends, obj_prop_on_end, gd_key_on_end and seg_orden_tween
-  are printed 
-- Bugfix: some 'own' variables changed to 'obj' to control properties
-  of an object that it is not own
-- Bugfix: seg_orden_tween fixed
-- For example: if loc_begin == loc_target, the operation is cancelled
-
 - Se cambia 'own_' por 'obj_', por las properties del objeto en cuestion.
 - Bugfix: Cuando termina Tween, obj_prop_on_end, gd_key_on_end and seg_orden_tween
   se imprimen en la consola.
@@ -1330,44 +1343,35 @@ v0.5 - 2/4/2015:
   
 - gd_key_on_start, gd_key_on_start_value, 
   gd_key_on_end, gd_key_on_end_value
-  It works the same as with own_prop_on_start, etc, but using globalDict
+  Funciona igual que own_prop_on_start, etc, peso usando globalDict
 
 v0.4 - 26/11/2014:
 - prop_value, prop_value_begin:
-  It works the same as with Enforce, using object's property
-  'element' must be 'object:property' or just 'property' (own object)
   Funciona igual que con Enforce, usando una property del objeto
   'element' puede ser 'object:property' o solo 'property' (objecto own)
 
 v0.3 - 23/10/2014:
 - scl_obj_begin, scl_begin, scl_obj_target, scl_target:
-  It works the same as with Position
   Funciona igual que con Position
 
 v0.2 - 22/10/2014:
 - own_prop_on_start, own_prop_on_start_value:
-  Value assing to an object property on tween start
   Asignacion de un valor a una propiedad de un objeto cuando comienza el tween.
 
 - seg_orden_on_end:
-  Second Order, Tween version (MD component)
   Segunda Orden, version Tween (componente de las MD)
 
 - delay:
-  Delay before tween starting.
   Delay antes de comenzar el tween.
 
 - rot_obj_begin, rot_begin, rot_obj_target, rot_target:
-  It works the same as with Position
   Funciona igual que con Position
 
 
 v0.1 – 1/10/2014:
-- Only 1 or 2 axis bone movement fixed.
 - Solucionado el movimiento de bones en 1 o 2 ejes solamente.
 
 vSinNumero – 20/8/2014
 - Lanzamiento inicial
-- Initial launch
 
 '''
