@@ -1,5 +1,28 @@
-tween for BGE, v0.91
-====================
+Tween for BGE, v0.92
+===================
+
+tween para BGE, v0.92
+Mario Mey - http://www.mariomey.com.ar
+
+Funcion Tween, para (entre otras cosas):
+
+  - mover, rotar, escalar objetos
+  - cambiar color, alpha de un objeto
+  - cambiar valores de las "properties" de un objeto
+  - mover bones
+  - cambiar influence de Constraints un bone
+
+...en un tiempo determinado, con un delay para el comienzo, 
+usando diferentes equaciones para la interpolacion, etc, etc.
+
+
+Based in [Tweener](https://code.google.com/p/tweener/), for ActionScript 2 and 3.
+
+Using [Robert Penner's Easing Functions](http://www.robertpenner.com/easing/)
+
+
+COMPLETE
+--------
 
 tween.tween(element = own.name, 
 duration = 1.0, delay = 0, ease_type = 'outQuad', 
@@ -134,6 +157,9 @@ http://www.mariomey.com.ar
 
 Changelog:
 ----------
+
+v0.92 - 1/07/2016:
+- Arreglado para solo enviar mensaje o setear una segunda orden
 
 v0.91 - 26/04/2016:
 - Se agrega un mensaje de error si algun objeto usado como referencia no existe.
