@@ -158,7 +158,7 @@ http://www.mariomey.com.ar
 Changelog:
 ----------
 
-v0.92 - 20/07/2017:
+v0.93 - 20/07/2017:
 - tween_evento(). Si no se incluia "element", quedaba en None, en lugar de own.name
 
 v0.92 - 01/07/2016:
