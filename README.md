@@ -1,4 +1,4 @@
-Tween for BGE, v0.92
+Tween for BGE, v0.93
 ===================
 
 tween para BGE, v0.92
@@ -158,7 +158,10 @@ http://www.mariomey.com.ar
 Changelog:
 ----------
 
-v0.92 - 1/07/2016:
+v0.92 - 20/07/2017:
+- tween_evento(). Si no se incluia "element", quedaba en None, en lugar de own.name
+
+v0.92 - 01/07/2016:
 - Arreglado para solo enviar mensaje o setear una segunda orden
 
 v0.91 - 26/04/2016:
