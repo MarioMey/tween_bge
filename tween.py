@@ -1,5 +1,5 @@
 '''
-tween para BGE, v0.92
+tween para BGE, v0.93
 Mario Mey - http://www.mariomey.com.ar
 
 Based in Tweener, for ActionScript 2 and 3.
@@ -14,6 +14,9 @@ import bge, mathutils, time
 gd = bge.logic.globalDict
 scene = bge.logic.getCurrentScene()
 cont = bge.logic.getCurrentController()
+
+# Un solo objeto es el que maneja todos los tweens (el que ejecuta
+# el codigo), independiente de que objetos esten siendo afectados.
 own = cont.owner
 
 print_all_data = False
@@ -1090,7 +1093,7 @@ def tween_constraint_enforce(element, x):
 # Tween para importar en main y md
 def tween_evento(evento):
 	# claves y valores por defecto
-	_element = None
+	_element = own.name
 	
 	_enforce_begin = None
 	_enforce = None
