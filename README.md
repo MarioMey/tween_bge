@@ -1,7 +1,6 @@
-Tween for BGE, v0.93
+Tween for BGE, v0.94
 ===================
 
-tween para BGE, v0.92
 Mario Mey - http://www.mariomey.com.ar
 
 Funcion Tween, para (entre otras cosas):
@@ -25,22 +24,22 @@ COMPLETE
 --------
 
 ```
-tween.tween(element = own.name, 
-duration = 1.0, delay = 0, ease_type = 'outQuad', 
-enforce_begin = None, enforce = None, 
-color_begin = None, color = None, 
-loc_begin = None, loc_target = None, 
-loc_obj_begin = None, loc_obj_target = None,
-rot_begin = None, rot_target = None, 
-rot_obj_begin = None, rot_obj_target = None, 
-scl_begin = None, scl_target = None, 
-scl_obj_begin = None, scl_obj_target = None, 
-obj_prop_on_start = None, obj_prop_on_start_value = None,
-obj_prop_on_end = None, obj_prop_on_end_value = None,
-gd_key_on_start = None, gd_key_on_start_value = None,
-gd_key_on_end = None, gd_key_on_end_value = None,
-send_message_on_end = None,
-seg_orden_on_end = None)
+tween.tween(scene = current_scene.name, element = own.name, 
+			duration = 1.0, delay = 0, ease_type = 'outQuad', 
+			enforce_begin = None, enforce = None, 
+			color_begin = None, color = None, 
+			loc_begin = None, loc_target = None, 
+			loc_obj_begin = None, loc_obj_target = None,
+			rot_begin = None, rot_target = None, 
+			rot_obj_begin = None, rot_obj_target = None, 
+			scl_begin = None, scl_target = None, 
+			scl_obj_begin = None, scl_obj_target = None, 
+			obj_prop_on_start = None, obj_prop_on_start_value = None,
+			obj_prop_on_end = None, obj_prop_on_end_value = None,
+			gd_key_on_start = None, gd_key_on_start_value = None,
+			gd_key_on_end = None, gd_key_on_end_value = None,
+			send_message_on_end = None,
+			seg_orden_on_end = None)
 ```
 
 For moving or rotating (euler) or scale object from:
@@ -53,11 +52,12 @@ to:
 -an object position/rotation/scale.
 
 E.G:
+```
 tween.tween(element='Torus', loc_obj_target='Empty.003', duration=3.5, ease_type='linear')
 tween.tween(loc_target=['',4,''], obj_prop_on_end='fx', obj_prop_on_end_value=False)
 tween.tween(rot_obj_target='Empty.000')
 tween.tween(scl_obj=[1,1.5,''])
-
+```
 
 In Local, for moving bones from:
 -actual position or
@@ -66,8 +66,11 @@ to:
 -[x,y,z] (in local)
 -['',y,''] (just Y axis, for example)
 
-EG: tween.tween(element='Armature:Bone.001', loc_target=[-2,1,2], duration=4)
 
+E.G:
+```
+tween.tween(element='Armature:Bone.001', loc_target=[-2,1,2], duration=4)
+```
 
 For changing object color from:
 -actual color or
@@ -76,8 +79,10 @@ to:
 -[r,g,b,a] or
 -['',g,'',a] (just green and alpha, for example)
 
-EG: tween.tween(element='Suzanne', color=['','','',1], ease_type='inOutQuad')
-
+E.G:
+```
+tween.tween(element='Suzanne', color=['','','',1], ease_type='inOutQuad')
+```
 
 For changing bone constraint influence from:
 -actual influence value
@@ -85,16 +90,22 @@ For changing bone constraint influence from:
 to:
 -Float number (0-1)
 
-EG: tween.tween(element='Armature.001:Bone.001:damp', enforce=1)
-
+EG:
+```
+tween.tween(element='Armature.001:Bone.001:damp', enforce=1)
+```
 
 Just for sending a message after 1 second:
 
-EG: tween.tween(send_message_on_end=['subj', 'body'])
+EG:
+```
+tween.tween(send_message_on_end=['subj', 'body'])
+```
 
 Defaults
 --------
 
+```
 function = ''
 element = own.name            ; Name of the object as 'object'
                               ; Name of the bone as 'object:bone'
@@ -146,6 +157,7 @@ gd_key_on_end_value = None        ; New value of the property
 send_message_on_end = None        ; Send Message when tween ends
 seg_orden_on_end = None           ; Second order (to do when tween ends, saved in
 								    scene.objects[obj][seg_orden_tween + number], to use with MD)
+```
 
 Based in Tweener, for ActionScript 2 and 3.
 https://code.google.com/p/tweener/
@@ -159,8 +171,12 @@ http://www.mariomey.com.ar
 Changelog:
 ----------
 
+v0.94 - 26/06/2018:
+- Bugfix: 'scene' siempre se pasa como string, no como <class 'KX_Scene'>
+
 v0.93 - 20/07/2017:
-- tween_evento(). Si no se incluia "element", quedaba en None, en lugar de own.name
+- Bugfix: tween_evento() - Si no se incluia "element", este quedaba
+  en None, en lugar de own.name
 
 v0.92 - 01/07/2016:
 - Arreglado para solo enviar mensaje o setear una segunda orden
