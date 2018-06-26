@@ -25,21 +25,21 @@ COMPLETE
 
 ```
 tween.tween(scene = current_scene.name, element = own.name, 
-			duration = 1.0, delay = 0, ease_type = 'outQuad', 
-			enforce_begin = None, enforce = None, 
-			color_begin = None, color = None, 
-			loc_begin = None, loc_target = None, 
-			loc_obj_begin = None, loc_obj_target = None,
-			rot_begin = None, rot_target = None, 
-			rot_obj_begin = None, rot_obj_target = None, 
-			scl_begin = None, scl_target = None, 
-			scl_obj_begin = None, scl_obj_target = None, 
-			obj_prop_on_start = None, obj_prop_on_start_value = None,
-			obj_prop_on_end = None, obj_prop_on_end_value = None,
-			gd_key_on_start = None, gd_key_on_start_value = None,
-			gd_key_on_end = None, gd_key_on_end_value = None,
-			send_message_on_end = None,
-			seg_orden_on_end = None)
+            duration = 1.0, delay = 0, ease_type = 'outQuad', 
+            enforce_begin = None, enforce = None, 
+            color_begin = None, color = None, 
+            loc_begin = None, loc_target = None, 
+            loc_obj_begin = None, loc_obj_target = None,
+            rot_begin = None, rot_target = None, 
+            rot_obj_begin = None, rot_obj_target = None, 
+            scl_begin = None, scl_target = None, 
+            scl_obj_begin = None, scl_obj_target = None, 
+            obj_prop_on_start = None, obj_prop_on_start_value = None,
+            obj_prop_on_end = None, obj_prop_on_end_value = None,
+            gd_key_on_start = None, gd_key_on_start_value = None,
+            gd_key_on_end = None, gd_key_on_end_value = None,
+            send_message_on_end = None,
+            seg_orden_on_end = None)
 ```
 
 For moving or rotating (euler) or scale object from:
@@ -151,7 +151,7 @@ gd_key_on_end_value = None        ; New value of the property
 
 send_message_on_end = None        ; Send Message when tween ends
 seg_orden_on_end = None           ; Second order (to do when tween ends, saved in
-								    scene.objects[obj][seg_orden_tween + number], to use with MD)
+                                  ; scene.objects[obj][seg_orden_tween + number], to use with MD)
 ```
 
 Based in Tweener, for ActionScript 2 and 3.
