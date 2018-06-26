@@ -12,14 +12,18 @@ http://www.robertpenner.com/easing/
 import bge, mathutils, time
 
 gd = bge.logic.globalDict
-scene = bge.logic.getCurrentScene()
+current_scene = bge.logic.getCurrentScene()
 cont = bge.logic.getCurrentController()
+
+getScene = {}
+for a in bge.logic.getSceneList():
+	getScene[a.name] = a
 
 # Un solo objeto es el que maneja todos los tweens (el que ejecuta
 # el codigo), independiente de que objetos esten siendo afectados.
 own = cont.owner
 
-print_all_data = False
+#~ print_all_data = False
 print_obj_move = False
 print_obj_rotate = False
 print_obj_scale = False
@@ -29,8 +33,8 @@ print_obj_diff_color = False
 print_bone_move = False
 print_constraint_enforce = False
 print_obj_no_obj_change = False
-#~ 
-#~ print_all_data = True
+
+print_all_data = True
 #~ print_obj_move = True
 #~ print_obj_rotate = True
 #~ print_obj_scale = True
@@ -43,6 +47,9 @@ print_obj_no_obj_change = False
 
 # TWEEN - Principal, hace funcionar el Loop
 def tween(**kwargs):
+	
+	# Escena inicial
+	scene = current_scene.name
 	
 	# Objeto inicial (puede ser otro)
 	obj = own.name
@@ -92,6 +99,18 @@ def tween(**kwargs):
 	gd_key_on_end_value = None
 	
 	seg_orden_on_end = None
+	
+	# ERRORES ERRORES ERRORES
+	# ... aca para poder usar scene como objeto
+	#~ print(getScene['principal'].objects)
+	if 'scene' in kwargs and kwargs['scene'] not in getScene:
+		print(kwargs)
+		print('Tween Error. No existe la escena:', kwargs['scene'])
+		return
+	# ERRORES ERRORES ERRORES
+		
+
+	if 'scene' in kwargs:               scene                  = kwargs['scene']
 	
 	if 'element' in kwargs:             element                = kwargs['element']
 
@@ -171,12 +190,12 @@ def tween(**kwargs):
 		print('Tween Error. Por favor, de a una accion a la vez.')
 		return
 	
-	cond1 = loc_obj_begin != None and loc_obj_begin not in scene.objects
-	cond2 = loc_obj_target != None and loc_obj_target not in scene.objects
-	cond3 = rot_obj_begin != None and rot_obj_begin not in scene.objects
-	cond4 = rot_obj_target != None and rot_obj_target not in scene.objects
-	cond5 = scl_obj_begin != None and scl_obj_begin not in scene.objects
-	cond6 = scl_obj_target != None and scl_obj_target not in scene.objects
+	cond1 = loc_obj_begin != None and loc_obj_begin not in getScene[scene].objects
+	cond2 = loc_obj_target != None and loc_obj_target not in getScene[scene].objects
+	cond3 = rot_obj_begin != None and rot_obj_begin not in getScene[scene].objects
+	cond4 = rot_obj_target != None and rot_obj_target not in getScene[scene].objects
+	cond5 = scl_obj_begin != None and scl_obj_begin not in getScene[scene].objects
+	cond6 = scl_obj_target != None and scl_obj_target not in getScene[scene].objects
 	if cond1 or cond2 or cond3 or cond4 or cond5 or cond6:
 		print('Tween Error. No existe el objeto de referencia')
 		return
@@ -200,7 +219,7 @@ def tween(**kwargs):
 		print('Tween Error. No existe la propiedad del objeto:', own.name)
 		return
 
-	if prop_value != None and element.split(':') == 2 and element.split(':')[1] not in scene.objects[element.split(':')[0]]:
+	if prop_value != None and element.split(':') == 2 and element.split(':')[1] not in getScene[scene].objects[element.split(':')[0]]:
 		print('Tween Error. No existe la propiedad del objeto: ', element.split(':')[0])
 		return
 
@@ -235,7 +254,7 @@ def tween(**kwargs):
 
 		function = 'property'
 		if prop_value_begin == None:
-			prop_value_begin = scene.objects[obj][element[1]]
+			prop_value_begin = getScene[scene].objects[obj][element[1]]
 	
 	else:
 		# objeto
@@ -246,10 +265,10 @@ def tween(**kwargs):
 				function = 'obj_move'
 
 				if loc_begin == None and loc_obj_begin == None:
-					loc_begin = list(scene.objects[obj].worldPosition)
+					loc_begin = list(getScene[scene].objects[obj].worldPosition)
 			
 				elif loc_obj_begin != None:
-					loc_begin = list(scene.objects[loc_obj_begin].worldPosition)
+					loc_begin = list(getScene[scene].objects[loc_obj_begin].worldPosition)
 
 				if loc_begin == loc_target:
 					if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
@@ -263,10 +282,10 @@ def tween(**kwargs):
 				function = 'obj_rotate'
 
 				if rot_begin == None and rot_obj_begin == None:
-					rot_begin = list(scene.objects[obj].worldOrientation.to_euler())
+					rot_begin = list(getScene[scene].objects[obj].worldOrientation.to_euler())
 			
 				elif rot_obj_begin != None:
-					rot_begin = list(scene.objects[rot_obj_begin].worldOrientation.to_euler())
+					rot_begin = list(getScene[scene].objects[rot_obj_begin].worldOrientation.to_euler())
 
 				if rot_begin == rot_target:
 					if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
@@ -280,10 +299,10 @@ def tween(**kwargs):
 				function = 'obj_scale'
 
 				if scl_begin == None and scl_obj_begin == None:
-					scl_begin = list(scene.objects[obj].worldScale)
+					scl_begin = list(getScene[scene].objects[obj].worldScale)
 			
 				elif scl_obj_begin != None:
-					scl_begin = list(scene.objects[scl_obj_begin].worldScale)
+					scl_begin = list(getScene[scene].objects[scl_obj_begin].worldScale)
 				
 				if scl_begin == scl_target:
 					if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
@@ -296,7 +315,7 @@ def tween(**kwargs):
 				function = 'obj_color'
 
 				if color_begin == None:
-					color_begin = list(scene.objects[obj].color)
+					color_begin = list(getScene[scene].objects[obj].color)
 					
 				if color_begin == color:
 					if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
@@ -324,7 +343,7 @@ def tween(**kwargs):
 		elif len(element) == 2:
 			function = 'bone_move'
 			if loc_begin == None:
-				arm = scene.objects[obj]
+				arm = getScene[scene].objects[obj]
 				bone = element[1]
 				loc_begin = list(arm.channels[bone].location)
 				
@@ -338,7 +357,7 @@ def tween(**kwargs):
 		elif len(element) == 3:
 			function = 'constraint_enforce'
 			if enforce_begin == None:
-				arm = scene.objects[obj]
+				arm = getScene[scene].objects[obj]
 				bone_constraint = element[1] + ':' + element[2]
 				enforce_begin = arm.constraints[bone_constraint].enforce
 				
@@ -365,7 +384,7 @@ def tween(**kwargs):
 				if own['tween' + num]['obj_prop_on_end'] != None:
 					prop = own['tween' + num]['obj_prop_on_end']
 					value = own['tween' + num]['obj_prop_on_end_value']
-					scene.objects[obj][prop] = value
+					getScene[scene].objects[obj][prop] = value
 
 				del(own['tween' + num])
 				number = i
@@ -388,6 +407,7 @@ def tween(**kwargs):
 	number = str(number)
 
 	own['tween' + number]                        = {}
+	own['tween' + number]['scene']               = getScene[scene].name
 	own['tween' + number]['obj']                 = obj
 
 	own['tween' + number]['number']              = number
@@ -442,7 +462,7 @@ def tween(**kwargs):
 	if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
 		
 		texto = '\n'
-		texto += '--TWEEN' + number + ' - obj: ' + obj + '\n'
+		texto += '--TWEEN' + number + ' - scene: ' + getScene[scene].name + ' - obj: ' + obj + '\n'
 		texto += '--' + function + str(element) + '\n'
 		texto += '--delay: '+ str(delay) + ' '
 		texto += '--duration: ' + str(duration) + ' '
@@ -457,7 +477,7 @@ def tween(**kwargs):
 			texto += '\n'
 
 		if color != None:
-			texto += '--color: ' + color
+			texto += '--color: ' + str(color)
 
 			if color_begin != None:
 				texto += ' --color_begin: ' + str(color_begin)
@@ -539,6 +559,7 @@ def tween_loop():
 
 		if 'tween' + number in own:
 			
+			scene               = own['tween' + number]['scene']
 			obj                 = own['tween' + number]['obj']
 			function            = own['tween' + number]['function']
 			element             = own['tween' + number]['element']
@@ -590,7 +611,7 @@ def tween_loop():
 				texto = ''
 				# valor para asignar a propiedad del objeto cuando comienza
 				if obj_prop_on_start != None:
-					scene.objects[obj][obj_prop_on_start] = obj_prop_on_start_value
+					getScene[scene].objects[obj][obj_prop_on_start] = obj_prop_on_start_value
 					own['tween' + number]['obj_prop_on_start'] = None
 					own['tween' + number]['obj_prop_on_start_value'] = None
 
@@ -606,7 +627,7 @@ def tween_loop():
 				if function == 'obj_move' or function == 'bone_move':
 					# move
 					if loc_obj_target != None:
-						finish = list(scene.objects[loc_obj_target].worldPosition)
+						finish = list(getScene[scene].objects[loc_obj_target].worldPosition)
 					else:
 						finish = loc_target
 					
@@ -639,7 +660,7 @@ def tween_loop():
 						if obj_prop_on_end != None:
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
 								print('**obj_prop_on_end:', obj_prop_on_end)
-							scene.objects[obj][obj_prop_on_end] = obj_prop_on_end_value
+							getScene[scene].objects[obj][obj_prop_on_end] = obj_prop_on_end_value
 							
 						# function a ejecutar cuando termina
 						if gd_key_on_end != None:
@@ -649,22 +670,26 @@ def tween_loop():
 						
 						# (MD) segunda orden a fijar cuando comienza
 						if seg_orden_on_end != None:
-							scene.objects[obj]['seg_orden_tween' + number] = seg_orden_on_end
+							getScene[scene].objects[obj]['seg_orden_tween' + number] = seg_orden_on_end
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
 								print('**seg_orden_on_end' + number + ':', seg_orden_on_end, end=' ')
 								print('**objeto:', obj)
 					
 					if function == 'obj_move':
 						#~ print(function + '(' + obj + ', ' + str(xyz) + ')')
-						eval('tween_' + function + '("' + obj + '", ' + str(xyz) + ')')
+						#~ eval('tween_' + function + '("' + obj + '", ' + str(xyz) + ')')
+						
+
+						eval('tween_' + function + '("' + getScene[scene].name + '", "' + obj + '", ' + str(xyz) + ')')
 					elif function == 'bone_move':
 						#~ print(function + '(' + obj + ', ' + str(xyz) + ')')
-						eval('tween_' + function + '("' + obj + ':' + element[1] + '", ' + str(xyz) + ')')
+						#~ eval('tween_' + function + '("' + obj + ':' + element[1] + '", ' + str(xyz) + ')')
+						eval('tween_' + function + '("' + getScene[scene].name + '", "' + obj + ':' + element[1] + '", ' + str(xyz) + ')')
 				
 				# OBJ_ROTATE
 				elif function == 'obj_rotate':
 					if rot_obj_target != None:
-						finish = list(scene.objects[rot_obj_target].worldOrientation.to_euler())
+						finish = list(getScene[scene].objects[rot_obj_target].worldOrientation.to_euler())
 					else:
 						finish = rot_target
 				
@@ -697,7 +722,7 @@ def tween_loop():
 						if obj_prop_on_end != None:
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
 								print('**obj_prop_on_end:', obj_prop_on_end)
-							scene.objects[obj][obj_prop_on_end] = obj_prop_on_end_value
+							getScene[scene].objects[obj][obj_prop_on_end] = obj_prop_on_end_value
 					
 						# function a ejecutar cuando termina
 						if gd_key_on_end != None:
@@ -707,18 +732,19 @@ def tween_loop():
 					
 						# (MD) segunda orden a fijar cuando comienza
 						if seg_orden_on_end != None:
-							scene.objects[obj]['seg_orden_tween' + number] = seg_orden_on_end
+							getScene[scene].objects[obj]['seg_orden_tween' + number] = seg_orden_on_end
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
 								print('**seg_orden_on_end' + number + ':', seg_orden_on_end, end=' ')
 								print('**objeto:', obj)
 					
 					#~ print(function + '(' + obj + ', ' + str(xyz) + ')')
-					eval('tween_' + function + '("' + obj + '", ' + str(xyz) + ')')
+					#~ eval('tween_' + function + '("' + obj + '", ' + str(xyz) + ')')
+					eval('tween_' + function + '("' + getScene[scene].name + '", "' + obj + '", ' + str(xyz) + ')')
 				
 				# OBJ_SCALE
 				elif function == 'obj_scale':
 					if scl_obj_target != None:
-						finish = list(scene.objects[scl_obj_target].worldScale)
+						finish = list(getScene[scene].objects[scl_obj_target].worldScale)
 					else:
 						finish = scl_target
 				
@@ -761,7 +787,7 @@ def tween_loop():
 					
 						# (MD) segunda orden a fijar cuando comienza
 						if seg_orden_on_end != None:
-							scene.objects[obj]['seg_orden_tween' + number] = seg_orden_on_end
+							getScene[scene].objects[obj]['seg_orden_tween' + number] = seg_orden_on_end
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
 								print('**seg_orden_on_end' + number + ':', seg_orden_on_end, end=' ')
 								print('**objeto:', obj)
@@ -811,13 +837,14 @@ def tween_loop():
 						
 						# (MD) segunda orden a fijar cuando comienza
 						if seg_orden_on_end != None:
-							scene.objects[obj]['seg_orden_tween' + number] = seg_orden_on_end
+							getScene[scene].objects[obj]['seg_orden_tween' + number] = seg_orden_on_end
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
 								print('**seg_orden_on_end' + number + ':', seg_orden_on_end, end=' ')
 								print('**objeto:', obj)
 					
 					#~ print('tween_obj_color(' + element + ', ' + str(rgba) + ')')
-					eval('tween_obj_color("' + obj + '", ' + str(rgba) + ')')
+					#~ eval('tween_obj_color("' + obj + '", ' + str(rgba) + ')')
+					eval('tween_obj_color("' + getScene[scene].name + '", "' + obj + '", ' + str(rgba) + ')')
 				
 				# FUNCION CONSTRAINT ENFORCE
 				elif function == 'constraint_enforce':
@@ -853,13 +880,14 @@ def tween_loop():
 					
 						# (MD) segunda orden a fijar cuando comienza
 						if seg_orden_on_end != None:
-							scene.objects[obj]['seg_orden_tween' + number] = seg_orden_on_end
+							getScene[scene].objects[obj]['seg_orden_tween' + number] = seg_orden_on_end
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
 								print('**seg_orden_on_end' + number + ':', seg_orden_on_end, end=' ')
 								print('**objeto:', obj)
 					
 					#~ print('tween_constraint_enforce(' + element + ', ' + str(x) + ')')
-					eval('tween_constraint_enforce("' + obj + ':' + element[1] + ':' + element[2] + '", ' + str(x) + ')')
+					#~ eval('tween_constraint_enforce("' + obj + ':' + element[1] + ':' + element[2] + '", ' + str(x) + ')')
+					eval('tween_constraint_enforce("' + getScene[scene].name + '", "' + obj + ':' + element[1] + ':' + element[2] + '", ' + str(x) + ')')
 				
 				# FUNCION PROPERTY
 				elif function == 'property':
@@ -891,13 +919,14 @@ def tween_loop():
 					
 						# (MD) segunda orden a fijar cuando comienza
 						if seg_orden_on_end != None:
-							scene.objects[obj]['seg_orden_tween' + number] = seg_orden_on_end
+							getScene[scene].objects[obj]['seg_orden_tween' + number] = seg_orden_on_end
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
 								print('**seg_orden_on_end' + number + ':', seg_orden_on_end, end=' ')
 								print('**objeto:', obj)
 					
 					#~ print('tween_constraint_enforce(' + element + ', ' + str(x) + ')')
-					eval('tween_obj_property("' + obj + ':' + element[1] + '", ' + str(x) + ')')
+					#~ eval('tween_obj_property("' + obj + ':' + element[1] + '", ' + str(x) + ')')
+					eval('tween_obj_property("' + getScene[scene].name + '", "' + obj + ':' + element[1] + '", ' + str(x) + ')')
 				
 				#~ # FUNCION ONLYSENDMESSAGE
 				#~ elif function == 'onlySendMessage':
@@ -944,7 +973,7 @@ def tween_loop():
 						
 						# (MD) segunda orden a fijar cuando comienza
 						if seg_orden_on_end != None:
-							scene.objects[obj]['seg_orden_tween' + number] = seg_orden_on_end
+							getScene[scene].objects[obj]['seg_orden_tween' + number] = seg_orden_on_end
 							if 'print_tween_funciones' in gd and gd['print_tween_funciones']:
 								print('**seg_orden_on_end' + number + ':', seg_orden_on_end, end=' ')
 								print('**objeto:', obj)
@@ -1015,84 +1044,85 @@ def tween_eq(ease_type, t, b, c, d):
 		#~ },
 
 # recibe objeto y valor en lista[x,y,z]
-def tween_obj_move(element, xyz):
+def tween_obj_move(scene, element, xyz):
 	if 'print_tween_funciones' in gd and gd['print_tween_funciones'] and print_obj_move:
 		print('tween_obj_move(' + element, str(xyz) + ')')
 	
 	for i in range(3):
 		if xyz[i] != '':
-			scene.objects[element].worldPosition[i] = xyz[i]
+			getScene[scene].objects[element].worldPosition[i] = xyz[i]
 		
 
 # recibe objeto y valor euler en lista[x,y,z]
-def tween_obj_rotate(element, xyz):
+def tween_obj_rotate(scene, element, xyz):
 	if 'print_tween_funciones' in gd and gd['print_tween_funciones'] and print_obj_rotate:
 		print('tween_obj_rotate(' + element, str(xyz) + ')')
 
-	new_euler = scene.objects[element].worldOrientation.to_euler()
+	new_euler = getScene[scene].objects[element].worldOrientation.to_euler()
 
 	for i in range(3):
 		if xyz[i] != '': new_euler[i] = xyz[i]
 			
-	scene.objects[element].worldOrientation = new_euler.to_matrix()
+	getScene[scene].objects[element].worldOrientation = new_euler.to_matrix()
 
 # recibe objeto y valor en lista[x,y,z]
-def tween_obj_scale(element, xyz):
+def tween_obj_scale(scene, element, xyz):
 	if 'print_tween_funciones' in gd and gd['print_tween_funciones'] and print_obj_scale:
 		print('tween_obj_scale(' + element, str(xyz) + ')')
 	
 	for i in range(3):
-		if xyz[i] != '': scene.objects[element].localScale[i] = xyz[i]
+		if xyz[i] != '': getScene[scene].objects[element].localScale[i] = xyz[i]
 
 # recibe objeto:property y el valor de property
-def tween_obj_property(element, x):
+def tween_obj_property(scene, element, x):
 	if 'print_tween_funciones' in gd and gd['print_tween_funciones'] and print_obj_property:
 		print('tween_obj_property(' + element, str(x) + ')')
 	
 	element = element.split(':')
-	scene.objects[element[0]][element[1]] = x
+	getScene[scene].objects[element[0]][element[1]] = x
 
 # recibe objeto y valor en lista[r,g,b,a]
-def tween_obj_color(element, rgba):
+def tween_obj_color(scene, element, rgba):
 	if 'print_tween_funciones' in gd and gd['print_tween_funciones'] and print_obj_color:
 		print('tween_obj_color(' + element, str(rgba) + ')')
 
 	for i in range(4):
-		if rgba[i] != '': scene.objects[element].color[i] = rgba[i]
+		if rgba[i] != '': getScene[scene].objects[element].color[i] = rgba[i]
 
 # recibe objeto y valor en lista[r,g,b,a]
 # TO-DO
-def tween_obj_diff_color(element, rgba):
+def tween_obj_diff_color(scene, element, rgba):
 	if 'print_tween_funciones' in gd and gd['print_tween_funciones'] and print_obj_diff_color:
 		print('tween_obj_diff_color(' + element, str(rgba) + ')')
 
 	for i in range(4):
-		if rgba[i] != '': scene.objects[element].color[i] = rgba[i]
+		if rgba[i] != '': getScene[scene].objects[element].color[i] = rgba[i]
 
 # recibe objeto:bone y valor en lista[x,y,z]
-def tween_bone_move(element, xyz):
+def tween_bone_move(scene, element, xyz):
 	if 'print_tween_funciones' in gd and gd['print_tween_funciones'] and print_bone_move:
 		print('tween_bone_move(' + element, str(xyz) + ')')
 	
 	element = element.split(':')
-	new_vector = scene.objects[element[0]].channels[element[1]].location
+	new_vector = getScene[scene].objects[element[0]].channels[element[1]].location
 	
 	for i in range(3):
 		if xyz[i] != '': new_vector[i] = xyz[i]
 	
-	scene.objects[element[0]].channels[element[1]].location = new_vector
+	getScene[scene].objects[element[0]].channels[element[1]].location = new_vector
 
 # recibe objeto:bone:constraint y el valor de enforce
-def tween_constraint_enforce(element, x):
+def tween_constraint_enforce(scene, element, x):
 	if 'print_tween_funciones' in gd and gd['print_tween_funciones'] and print_constraint_enforce:
 		print('tween_constraint_enforce(' + element, str(x) + ')')
 	
 	element = element.split(':')
-	scene.objects[element[0]].constraints[element[1] + ':' + element[2]].enforce = x
+	getScene[scene].objects[element[0]].constraints[element[1] + ':' + element[2]].enforce = x
 
 # Tween para importar en main y md
 def tween_evento(evento):
 	# claves y valores por defecto
+	_scene = current_scene.name
 	_element = own.name
 	
 	_enforce_begin = None
@@ -1132,6 +1162,7 @@ def tween_evento(evento):
 	_send_message_on_end = None
 	_seg_orden_on_end = None
 	
+	if 'scene' in evento:               _scene                  = evento['scene']
 	if 'element' in evento:             _element                = evento['element']
 	
 	if 'enforce_begin' in evento:       _enforce_begin          = evento['enforce_begin']
@@ -1171,7 +1202,8 @@ def tween_evento(evento):
 	if 'seg_orden_on_end' in evento:    _seg_orden_on_end       = evento['seg_orden_on_end']
 	if 'send_message_on_end' in evento:    _send_message_on_end       = evento['send_message_on_end']
 	
-	tween(element = _element,
+	tween(		scene = _scene,
+				element = _element,
 				
 				enforce_begin = _enforce_begin, 
 				enforce = _enforce, 

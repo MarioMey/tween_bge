@@ -51,7 +51,6 @@ to:
 -['',y,''] (just Y axis, for example) or
 -an object position/rotation/scale.
 
-E.G:
 ```
 tween.tween(element='Torus', loc_obj_target='Empty.003', duration=3.5, ease_type='linear')
 tween.tween(loc_target=['',4,''], obj_prop_on_end='fx', obj_prop_on_end_value=False)
@@ -67,7 +66,6 @@ to:
 -['',y,''] (just Y axis, for example)
 
 
-E.G:
 ```
 tween.tween(element='Armature:Bone.001', loc_target=[-2,1,2], duration=4)
 ```
@@ -79,7 +77,6 @@ to:
 -[r,g,b,a] or
 -['',g,'',a] (just green and alpha, for example)
 
-E.G:
 ```
 tween.tween(element='Suzanne', color=['','','',1], ease_type='inOutQuad')
 ```
@@ -90,14 +87,12 @@ For changing bone constraint influence from:
 to:
 -Float number (0-1)
 
-EG:
 ```
 tween.tween(element='Armature.001:Bone.001:damp', enforce=1)
 ```
 
 Just for sending a message after 1 second:
 
-EG:
 ```
 tween.tween(send_message_on_end=['subj', 'body'])
 ```
