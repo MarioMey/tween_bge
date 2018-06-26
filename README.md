@@ -24,6 +24,7 @@ Using [Robert Penner's Easing Functions](http://www.robertpenner.com/easing/)
 COMPLETE
 --------
 
+```
 tween.tween(element = own.name, 
 duration = 1.0, delay = 0, ease_type = 'outQuad', 
 enforce_begin = None, enforce = None, 
@@ -40,7 +41,7 @@ gd_key_on_start = None, gd_key_on_start_value = None,
 gd_key_on_end = None, gd_key_on_end_value = None,
 send_message_on_end = None,
 seg_orden_on_end = None)
-
+```
 
 For moving or rotating (euler) or scale object from:
 -actual position or 
