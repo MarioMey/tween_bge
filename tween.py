@@ -23,7 +23,7 @@ for a in bge.logic.getSceneList():
 # el codigo), independiente de que objetos esten siendo afectados.
 own = cont.owner
 
-#~ print_all_data = False
+print_all_data = False
 print_obj_move = False
 print_obj_rotate = False
 print_obj_scale = False
@@ -34,7 +34,7 @@ print_bone_move = False
 print_constraint_enforce = False
 print_obj_no_obj_change = False
 
-print_all_data = True
+#~ print_all_data = True
 #~ print_obj_move = True
 #~ print_obj_rotate = True
 #~ print_obj_scale = True
@@ -48,6 +48,13 @@ print_all_data = True
 # TWEEN - Principal, hace funcionar el Loop
 def tween(**kwargs):
 	
+	# Borra diccionario de escenas y...
+	for key in list(getScene.keys()):
+		del getScene[key]
+	# ... lo recrea.
+	for a in bge.logic.getSceneList():
+		getScene[a.name] = a
+
 	# Escena inicial
 	scene = current_scene.name
 	
@@ -101,14 +108,11 @@ def tween(**kwargs):
 	seg_orden_on_end = None
 	
 	# ERRORES ERRORES ERRORES
-	# ... aca para poder usar scene como objeto
-	#~ print(getScene['principal'].objects)
 	if 'scene' in kwargs and kwargs['scene'] not in getScene:
-		print(kwargs)
+		#~ print(kwargs)
 		print('Tween Error. No existe la escena:', kwargs['scene'])
 		return
 	# ERRORES ERRORES ERRORES
-		
 
 	if 'scene' in kwargs:               scene                  = kwargs['scene']
 	

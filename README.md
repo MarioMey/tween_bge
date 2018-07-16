@@ -166,6 +166,9 @@ http://www.mariomey.com.ar
 Changelog:
 ----------
 
+v0.95 - 16/07/2018:
+- Bugfix: getScene se actualiza cada vez que se ejecuta tween()
+
 v0.94 - 26/06/2018:
 - Bugfix: 'scene' siempre se pasa como string, no como <class 'KX_Scene'>
 
