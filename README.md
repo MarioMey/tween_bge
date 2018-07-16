@@ -154,15 +154,6 @@ seg_orden_on_end = None           ; Second order (to do when tween ends, saved i
                                   ; scene.objects[obj][seg_orden_tween + number], to use with MD)
 ```
 
-Based in Tweener, for ActionScript 2 and 3.
-https://code.google.com/p/tweener/
-
-Using Robert Penner's Easing Functions
-http://www.robertpenner.com/easing/
-
-Mario Mey
-http://www.mariomey.com.ar
-
 Changelog:
 ----------
 
