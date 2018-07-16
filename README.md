@@ -1,5 +1,5 @@
-Tween for BGE, v0.94
-===================
+Tween for BGE, v0.95
+====================
 
 Mario Mey - http://www.mariomey.com.ar
 
